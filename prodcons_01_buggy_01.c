@@ -11,25 +11,53 @@
 #define MAXCONSUMING 5
 
 #define _wait(a) sleep(rand() % a)
-#define out(s) \
-    printf(s); \
+#define out(s) 
+    printf(s); 
     fflush(stdout)
-#define outi(s, n) \
-    printf(s, n); \
+#define outi(s, n) 
+    printf(s, n); 
     fflush(stdout)
 
 int n;
 sem_t s, delay;
 
-/**
-Auxiliary functions
-*/
 void produce();
 void append();
 void consume();
 void take();
 
-/** main() function */
+
+void *producer(void *data)
+{
+    while (1)
+    {
+        produce();
+        sem_wait(&s);
+        append();
+        n = n + 1;
+        outi("[P] \t \t item: %d\n", n);
+        if (n == 1)
+            sem_post(&delay);
+        sem_post(&s);
+    }
+    pthread_exit(0);
+}
+
+void *consumervoid *data { // ERROR 1: Falta el par\E9ntesis
+    sem_wait(&delay);
+    while 1 {              // ERROR 2: Falta par\E9ntesis
+        sem_wait(&s);
+        take();
+        outi("[C] \t \t item: %d\n", n);
+        n = n - 1;
+        sem_post(&s);
+        consume();
+        if (n = 0)         // ERROR 3: Asignaci\F3n en lugar de comparaci\F3n
+            sem_wait(&delay);
+    }
+    pthread_exit(0);
+}
+
 int main(int argc, char *argv[])
 {
     pthread_t *consumer_pt, *producer_pt;

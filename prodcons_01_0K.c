@@ -26,6 +26,39 @@ void append();
 void consume();
 void take();
 
+// --- FUNCIONES DE LOS HILOS (FALTABAN) ---
+void *producer(void *data)
+{
+    while (1)
+    {
+        produce();
+        sem_wait(&s);
+        append();
+        n = n + 1;
+        outi("[P] \t \t item: %d\n", n);
+        sem_post(&s);
+        sem_post(&delay); // Avisa SIEMPRE que hay un nuevo ítem
+    }
+    pthread_exit(0);
+}
+
+void *consumer(void *data)
+{
+    while (1)
+    {
+        sem_wait(&delay); // Espera primero a que haya un ítem
+        sem_wait(&s);
+        take();
+        int m = n; // Variable auxiliar 'm' solicitada en el enunciado
+        outi("[C] \t \t item: %d\n", m);
+        n = n - 1;
+        sem_post(&s);
+        consume();
+    }
+    pthread_exit(0);
+}
+// -----------------------------------------
+
 /** main() function */
 int main(int argc, char *argv[])
 {
